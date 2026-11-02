@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sandbox · Sisslerfeld Energy Digital Twin</title>
+  <meta name="description" content="Change the key assumptions of the Sisslerfeld energy system and see pre-computed simulation results.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="sandbox">
+  <nav class="topnav" aria-label="Pages">
+    <div class="wrap">
+      <a href="index.html" class="brand">Overview</a>
+      <a href="data.html">1 &middot; Energy data</a>
+      <a href="today.html">2 &middot; Today's system</a>
+      <a href="sandbox.html" aria-current="page">3 &middot; Sandbox</a>
+      <a href="runs.html">4 &middot; All runs</a>
+      <span class="spacer"></span>
+      <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
+    </div>
+  </nav>
+
+  <div id="fatal" role="alert"></div>
+  <noscript>This page needs JavaScript to draw its charts.</noscript>
+
+  <main>
+    <section class="block" id="sandbox">
+      <div class="wrap">
+        <h2>3 &middot; Energy system sandbox</h2>
+        <p class="lead">Change the key assumptions and see the simulated system. Each combination is a pre-computed
+          run: if yours has not been simulated yet, you can request it.</p>
+
+        <h3 class="group">3a &middot; Time-series profiles</h3>
+        <div class="toolbar">
+          <label>Weather year (profile):
+            <select id="profile-select"></select>
+          </label>
+          <span class="seg" id="profile-res" role="group" aria-label="Time resolution"></span>
+        </div>
+        <p class="meta" id="profile-meta"></p>
+        <h3 style="margin:12px 0 8px">Demand profiles</h3>
+        <div class="grid three" id="profile-demand"></div>
+        <div class="grid" id="profile-solar" style="margin-top:18px"></div>
+
+        <h3 class="group">3b &middot; Key modelling parameters</h3>
+        <div class="sliders" id="sliders"></div>
+        <div id="match-status"></div>
+        <div id="sandbox-results"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="vendor/plotly-cartesian.min.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

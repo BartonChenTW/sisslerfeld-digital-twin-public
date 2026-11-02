@@ -22,7 +22,9 @@ No build step, no `npm`. The charting library (Plotly.js, MIT) is bundled in `si
 
 ```
 site/
-  index.html  css/  js/  assets/  vendor/
+  index.html         overview (about, links to the four pages)
+  data.html today.html sandbox.html runs.html   one page per section; all share js/app.js
+  css/  js/  assets/  vendor/
   config.js          contact, "request a scenario" settings
   data/
     manifest.js      list of runs, slider definitions, scenario lookup
@@ -56,7 +58,8 @@ Edit `site/config.js`:
   `PV installation`, `heating renew`, `EV share`, `carbon price`). The page then opens the form with the current
   slider values already filled in.
 
-A scenario can also be shared as a link: `index.html?scenario=profile=2025-07-07; industrial demand=20; ...`.
+A scenario can also be shared as a link: `sandbox.html?scenario=profile=2025-07-07; industrial demand=20; ...`
+(older `index.html?scenario=...` links are forwarded to the sandbox).
 
 ## Publish with GitHub Pages
 

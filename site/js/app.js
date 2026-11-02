@@ -12,6 +12,13 @@
     f.textContent = `Something went wrong while loading "${where}": ${err && err.message ? err.message : err}`;
   }
 
+  const PAGE = document.body.dataset.page || 'home';      // home | data | today | sandbox | runs
+  // links shared before the split into pages pointed at index.html?scenario=...
+  if (PAGE === 'home' && new URLSearchParams(location.search).has('scenario')) {
+    location.replace('sandbox.html' + location.search);
+    return;
+  }
+
   const M = DT.get('manifest');
   if (!M) { showError('manifest', new Error('data/manifest.js is missing')); return; }
   DT.version = M.built;
@@ -109,15 +116,45 @@
     });
   }
 
-  /* ------------------------------------------------------------ about */
-  (function about() {
-    $('data-notice').textContent = 'Prototype: results are model outputs under stated assumptions, not forecasts, and may change as the model is updated.';
-    $('about-meta').textContent = `Data build ${M.built} · latest weather profile ${M.latest_profile} · plant data snapshot ${M.plants_snapshot} · ${M.runs.length} simulation runs`;
+  /* ------------------------------------------------------------ footer (one copy for all pages) */
+  (function footer() {
+    const f = $('site-footer');
+    if (!f) return;
+    f.innerHTML = `<div class="wrap">
+      <p><strong>Contact:</strong> <a id="contact-link" href="#"></a></p>
+      <p><strong>Data and software</strong></p>
+      <ul>
+        <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via opendata.swiss. Street addresses are not shown and coordinates are rounded.</li>
+        <li>Weather: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0).</li>
+        <li>Map and municipality boundaries: &copy; swisstopo.</li>
+        <li>Charts: <a href="https://plotly.com/javascript/">Plotly.js</a> (MIT), bundled with this page.</li>
+        <li>Energy model: ehubX, Urban Energy Systems Lab, Empa.</li>
+      </ul>
+      <p class="meta">Prototype. Results are model outputs under stated assumptions, not forecasts. <span id="repo-link"></span></p>
+    </div>`;
     const a = $('contact-link');
     a.textContent = `${CFG.contactName || 'Contact'} (${CFG.contactEmail || ''})`;
     a.href = 'mailto:' + (CFG.contactEmail || '');
     if (CFG.repoUrl) $('repo-link').innerHTML = `<a href="${CFG.repoUrl}">Source on GitHub</a>`;
   })();
+
+  /* ------------------------------------------------------------ overview */
+  /** the reference run of the latest profile: what the "today" page shows */
+  function todayRunId() {
+    const id = lookup(M.latest_profile, defaults);
+    if (id) return id;
+    const cands = M.runs.filter(r => r.kind === 'single-hub').sort((a, b) => b.profile.localeCompare(a.profile));
+    return cands.length ? cands[0].id : M.runs[0].id;
+  }
+
+  async function initHome() {
+    $('data-notice').textContent = 'Prototype: results are model outputs under stated assumptions, not forecasts, and may change as the model is updated.';
+    $('about-meta').textContent = `Data build ${M.built} · latest weather profile ${M.latest_profile} · plant data snapshot ${M.plants_snapshot} · ${M.runs.length} simulation runs`;
+    const r = runsById[todayRunId()];
+    $('go-today').textContent = `The latest monthly simulation (run ${r.name}, weather up to ${r.profile}): ` +
+      `${C.fmt(r.summary.cost_MCHF, 1)} MCHF/yr, ${C.fmt(r.summary.carbon_kt, 1)} ktCO2-eq/yr.`;
+    $('go-runs').textContent = `All ${M.runs.length} pre-computed runs in one table; compare up to three.`;
+  }
 
   /* ------------------------------------------------------------ 1. live energy data */
   async function initPlants() {
@@ -148,13 +185,26 @@
 
   /* ------------------------------------------------------------ 2. today */
   async function initToday() {
-    let id = lookup(M.latest_profile, defaults);
-    if (!id) {
-      const cands = M.runs.filter(r => r.kind === 'single-hub').sort((a, b) => b.profile.localeCompare(a.profile));
-      id = cands.length ? cands[0].id : M.runs[0].id;
-    }
+    const id = todayRunId();
     const r = runsById[id];
     $('today-meta').textContent = `Run "${r.name}" · simulated ${r.date} · weather profile ${r.profile}`;
+    // "Carbon price (CHF/tCO2)" + 80 -> "carbon price 80 CHF/tCO2"
+    const paramText = p => {
+      const unit = (p.label.match(/\(([^)]*)\)$/) || [])[1] || '';
+      const name = p.label.replace(/\s*\([^)]*\)$/, '');
+      const lower = /^[A-Z]{2}/.test(name) ? name : name[0].toLowerCase() + name.slice(1);      // keep "EV", "PV"
+      return `${lower.replace(/\bpv\b/, 'PV')} ${r.params[p.key]}${unit ? ' ' + unit : ''}`;
+    };
+    $('today-params').textContent = M.params.map(paramText).join(', ');
+    if (M.profiles_available.includes(r.profile)) {
+      try {
+        const w = await DT.load('weather/' + r.profile);
+        const n = w.temperature_C.length;
+        const end = C.makeTimes(w.start, n, 1)[n - 1];
+        const day = s => new Date(s.slice(0, 10) + 'T00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+        $('today-window').textContent = `${day(w.start)} to ${day(end)}`;
+      } catch (e) { /* keep the generic wording */ }
+    }
     await renderResults($('today-results'), [id], { tiles: $('today-tiles') });
   }
 
@@ -402,12 +452,13 @@
   }
 
   /* ------------------------------------------------------------ boot */
-  const steps = [
-    ['energy data', initPlants], ['weather', initWeather], ['today', initToday],
-    ['sandbox', async () => { const fromUrl = applyScenarioFromUrl(); initProfileControls(); initSliders(); await renderProfiles(); await updateSandbox();
-      if (fromUrl && !new URLSearchParams(location.search).has('noscroll')) $('sandbox').scrollIntoView({ behavior: 'instant', block: 'start' }); }],
-    ['runs', async () => initRuns()],
-  ];
+  const steps = {
+    home: [['overview', initHome]],
+    data: [['energy data', initPlants], ['weather', initWeather]],
+    today: [['today', initToday]],
+    sandbox: [['sandbox', async () => { applyScenarioFromUrl(); initProfileControls(); initSliders(); await renderProfiles(); await updateSandbox(); }]],
+    runs: [['runs', async () => initRuns()]],
+  }[PAGE] || [];
   steps.reduce((p, [name, fn]) => p.then(() => fn().catch(e => showError(name, e))), Promise.resolve())
     .then(() => { document.documentElement.setAttribute('data-ready', '1'); });
 })();

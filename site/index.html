@@ -7,7 +7,7 @@
   <meta name="description" content="Interactive, public view of the energy system digital twin of the Sisslerfeld area (NCCR / Empa). Pre-computed simulation results; no live data processing.">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-page="home">
   <header class="hero">
     <div class="wrap hero-body">
       <div class="hero-text">
@@ -33,13 +33,13 @@
     </div>
   </header>
 
-  <nav class="topnav" aria-label="Sections">
+  <nav class="topnav" aria-label="Pages">
     <div class="wrap">
-      <a href="#about">About</a>
-      <a href="#live">1 &middot; Energy data</a>
-      <a href="#today">2 &middot; Today's system</a>
-      <a href="#sandbox">3 &middot; Sandbox</a>
-      <a href="#runs">4 &middot; All runs</a>
+      <a href="index.html" class="brand" aria-current="page">Overview</a>
+      <a href="data.html">1 &middot; Energy data</a>
+      <a href="today.html">2 &middot; Today's system</a>
+      <a href="sandbox.html">3 &middot; Sandbox</a>
+      <a href="runs.html">4 &middot; All runs</a>
       <span class="spacer"></span>
       <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
     </div>
@@ -60,103 +60,35 @@
         </p>
         <div class="notice" id="data-notice"></div>
         <p class="meta" id="about-meta"></p>
-      </div>
-    </section>
 
-    <section class="block" id="live">
-      <div class="wrap">
-        <h2>1 &middot; Energy data of the area</h2>
-        <p class="lead">Electricity production plants in Stein, Eiken, Münchwilen and Sisseln, and the past year's weather
-          that drives the simulated PV and demand profiles.</p>
-
-        <h3 class="group">1a &middot; Electricity production plants</h3>
-        <p class="meta" id="plants-meta"></p>
-        <div class="grid two" id="plants-grid"></div>
-        <div style="margin-top:14px" id="plants-map"></div>
-
-        <h3 class="group">1b &middot; Weather, past 365 days</h3>
-        <p class="meta" id="weather-meta"></p>
-        <div class="grid two" id="weather-grid"></div>
-      </div>
-    </section>
-
-    <section class="block" id="today">
-      <div class="wrap">
-        <h2>2 &middot; Today's energy system</h2>
-        <p class="lead">Simulation of the Sisslerfeld energy system with the operation of the past 365 days
-          (single-hub model, cost-minimising). Results of the latest reference run.</p>
-        <p class="meta" id="today-meta"></p>
-        <div id="today-tiles"></div>
-        <div id="today-results"></div>
-      </div>
-    </section>
-
-    <section class="block" id="sandbox">
-      <div class="wrap">
-        <h2>3 &middot; Energy system sandbox</h2>
-        <p class="lead">Change the key assumptions and see the simulated system. Each combination is a pre-computed
-          run: if yours has not been simulated yet, you can request it.</p>
-
-        <h3 class="group">3a &middot; Time-series profiles</h3>
-        <div class="toolbar">
-          <label>Weather year (profile):
-            <select id="profile-select"></select>
-          </label>
-          <span class="seg" id="profile-res" role="group" aria-label="Time resolution"></span>
+        <h3 class="group">Explore</h3>
+        <div class="explore">
+          <a class="go" href="data.html">
+            <span class="n">1</span><strong>Energy data of the area</strong>
+            <span>Electricity production plants in the four municipalities and the weather of the past year.</span>
+          </a>
+          <a class="go" href="today.html">
+            <span class="n">2</span><strong>Today's energy system</strong>
+            <span id="go-today">The latest monthly simulation with the weather of the past 365 days.</span>
+          </a>
+          <a class="go" href="sandbox.html">
+            <span class="n">3</span><strong>Energy system sandbox</strong>
+            <span>Change industry, population, PV, heating, mobility and carbon price; request scenarios that are not simulated yet.</span>
+          </a>
+          <a class="go" href="runs.html">
+            <span class="n">4</span><strong>All simulation runs</strong>
+            <span id="go-runs">Every pre-computed run in one table; compare up to three.</span>
+          </a>
         </div>
-        <p class="meta" id="profile-meta"></p>
-        <h3 style="margin:12px 0 8px">Demand profiles</h3>
-        <div class="grid three" id="profile-demand"></div>
-        <div class="grid" id="profile-solar" style="margin-top:18px"></div>
-
-        <h3 class="group">3b &middot; Key modelling parameters</h3>
-        <div class="sliders" id="sliders"></div>
-        <div id="match-status"></div>
-        <div id="sandbox-results"></div>
-      </div>
-    </section>
-
-    <section class="block" id="runs">
-      <div class="wrap">
-        <h2>4 &middot; All simulation runs</h2>
-        <p class="lead">Every pre-computed run. Tick up to three to compare them below.</p>
-        <div id="runs-overview"></div>
-        <div class="toolbar" style="margin-top:16px">
-          <label>Show:
-            <select id="runs-filter">
-              <option value="all">all runs</option>
-              <option value="single-hub">single-hub runs</option>
-              <option value="multi-hub">multi-hub runs</option>
-            </select>
-          </label>
-          <span class="meta" id="runs-count"></span>
-        </div>
-        <div class="runs-wrap"><table class="runs" id="runs-table"></table></div>
-        <h3 class="group">Comparison</h3>
-        <div id="runs-compare"></div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="wrap">
-      <p><strong>Contact:</strong> <a id="contact-link" href="#"></a></p>
-      <p><strong>Data and software</strong></p>
-      <ul>
-        <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via opendata.swiss. Street addresses are not shown and coordinates are rounded.</li>
-        <li>Weather: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0).</li>
-        <li>Map and municipality boundaries: &copy; swisstopo.</li>
-        <li>Charts: <a href="https://plotly.com/javascript/">Plotly.js</a> (MIT), bundled with this page.</li>
-        <li>Energy model: ehubX, Urban Energy Systems Lab, Empa.</li>
-      </ul>
-      <p class="meta">Prototype. Results are model outputs under stated assumptions, not forecasts. <span id="repo-link"></span></p>
-    </div>
-  </footer>
+  <footer id="site-footer"></footer>
 
   <script src="config.js"></script>
   <script src="js/data.js"></script>
   <script src="data/manifest.js"></script>
-  <script src="vendor/plotly-cartesian.min.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
 </body>

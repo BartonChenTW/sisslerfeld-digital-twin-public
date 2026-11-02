@@ -5,7 +5,8 @@ Sanity checks for the static site (stdlib only; also run by CI before every depl
 
   - every data file parses and is not too large
   - no field that must never be published (street address, post code, ids, e-mail addresses)
-  - the page loads nothing from external hosts (it must work offline)
+  - the pages load nothing from external hosts (they must work offline)
+  - every local link, script, stylesheet and image the pages refer to exists
   - the manifest and the data files agree
 Exit code 1 if anything is wrong.
 """
@@ -23,6 +24,8 @@ EMAIL_RE = re.compile(r'[\w.+-]+@[\w-]+\.[\w.-]+')
 EXTERNAL_RE = re.compile(
     r'''<(?:script|img|iframe|link|source|video|audio|embed)\b[^>]*\b(?:src|href)\s*=\s*["']?(?:https?:)?//'''
     r'''|url\(\s*["']?(?:https?:)?//|@import\s+["']?(?:https?:)?//''', re.I)
+# src/href values that are not absolute URLs, mailto: or in-page anchors
+LOCAL_REF_RE = re.compile(r'''\b(?:src|href)\s*=\s*"(?!https?:|//|mailto:|#)([^"]+)"''', re.I)
 
 
 def parse_data_file(path):
@@ -70,6 +73,13 @@ def main(site):
     for p in list(site.glob('*.html')) + list((site / 'css').glob('*.css')) + list((site / 'js').glob('*.js')):
         if EXTERNAL_RE.search(p.read_text(encoding='utf-8')):
             errors.append(f'{p.relative_to(site).as_posix()}: loads a resource from an external host')
+
+    # --- every local link and script/image/stylesheet of the pages exists
+    for p in site.glob('*.html'):
+        for ref in LOCAL_REF_RE.findall(p.read_text(encoding='utf-8')):
+            target = ref.split('#')[0].split('?')[0]
+            if target and not (site / target).is_file():
+                errors.append(f'{p.name}: "{ref}" does not exist')
 
     # --- manifest consistency
     if manifest is None:

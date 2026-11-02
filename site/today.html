@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Today's system · Sisslerfeld Energy Digital Twin</title>
+  <meta name="description" content="Simulation of the Sisslerfeld energy system with the weather of the past 365 days, updated monthly.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="today">
+  <nav class="topnav" aria-label="Pages">
+    <div class="wrap">
+      <a href="index.html" class="brand">Overview</a>
+      <a href="data.html">1 &middot; Energy data</a>
+      <a href="today.html" aria-current="page">2 &middot; Today's system</a>
+      <a href="sandbox.html">3 &middot; Sandbox</a>
+      <a href="runs.html">4 &middot; All runs</a>
+      <span class="spacer"></span>
+      <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
+    </div>
+  </nav>
+
+  <div id="fatal" role="alert"></div>
+  <noscript>This page needs JavaScript to draw its charts.</noscript>
+
+  <main>
+    <section class="block" id="today">
+      <div class="wrap">
+        <h2>2 &middot; Today's energy system</h2>
+        <p class="lead">The Sisslerfeld energy system simulated with the weather of the past 365 days and today's
+          settings. A new run is added every month.</p>
+        <p class="meta" id="today-meta"></p>
+
+        <section class="assume" aria-labelledby="assume-h">
+          <h3 id="assume-h">What &ldquo;today&rdquo; means here</h3>
+          <ul>
+            <li><strong>A simulation, not measurements and not a forecast.</strong> The figures come from the
+              energy-hub model ehubX. They show how a cost-optimal energy system for the area would meet the demand
+              under current conditions. They are not metered data from the plants and networks in the area.</li>
+            <li><strong>Weather of the past year.</strong> &ldquo;Today&rdquo; uses the hourly weather of the most
+              recent 365 days, <span id="today-window">the year before the profile date</span> (UTC), from the
+              Open-Meteo historical weather archive for one point in the area (47.55&deg;&nbsp;N, 8.01&deg;&nbsp;E).
+              The last few days of that window can be preliminary values.</li>
+            <li><strong>Demand and solar profiles are estimated from that weather.</strong> Space heating, space
+              cooling, hot water and building electricity come from machine-learning models (random forests) that use
+              outdoor temperature, hour and weekday; the solar irradiation of each roof orientation from temperature,
+              solar radiation, day of the year and hour. The models are trained on the 2016 demand profiles and the
+              2018 solar profiles of the model.</li>
+            <li><strong>Industry is not re-estimated.</strong> The industrial production profile is the 2016
+              normalised shape, aligned to the calendar of the weather window. The annual industrial demand stays at
+              the reference level.</li>
+            <li><strong>Everything else uses today's settings.</strong> The scenario parameters are at their default
+              values: <span id="today-params"></span>. Technology costs and energy import prices are fixed model
+              inputs, not current market prices.</li>
+            <li><strong>Model set-up.</strong> The whole area is modelled as one energy hub, every hour of the year
+              is simulated (no typical days), and the model minimises the total annual cost knowing the whole year in
+              advance.</li>
+            <li><strong>Updated monthly.</strong> Each month a run with the latest weather is added; earlier
+              &ldquo;today&rdquo; runs (names starting with R and a date) stay in <a href="runs.html">All runs</a>.</li>
+          </ul>
+        </section>
+
+        <div id="today-tiles"></div>
+        <div id="today-results"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="vendor/plotly-cartesian.min.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

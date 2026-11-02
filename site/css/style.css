@@ -93,6 +93,8 @@ p { margin: 0 0 12px; }
   border-bottom: 2px solid transparent;
 }
 .topnav a:hover { color: var(--text); border-bottom-color: var(--axis); }
+.topnav a[aria-current="page"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.topnav a.brand { font-weight: 650; }
 .topnav .spacer { flex: 1; }
 .topnav button {
   font: inherit; font-size: 13px; color: var(--text-2); background: none; border: 1px solid var(--axis);
@@ -107,6 +109,25 @@ section.block > .wrap > .lead { color: var(--text-2); max-width: 78ch; }
   background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 12px 14px; font-size: 14px; margin: 14px 0;
 }
 .meta { color: var(--muted); font-size: 13px; }
+
+/* ---- overview: links to the pages */
+.explore { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.explore a.go {
+  display: grid; gap: 6px; align-content: start; padding: 16px; text-decoration: none; color: var(--text-2); font-size: 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+}
+.explore a.go:hover { border-color: var(--accent); }
+.explore a.go strong { color: var(--text); font-size: 1rem; }
+.explore a.go .n {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 650;
+  background: var(--accent); color: var(--accent-ink);
+}
+
+/* ---- today: assumptions behind "today" */
+.assume { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin: 16px 0; }
+.assume h3 { font-size: 1rem; margin-bottom: 6px; }
+.assume ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--text-2); max-width: 100ch; }
+.assume strong { color: var(--text); }
 h3.group { margin: 26px 0 10px; font-size: 1.1rem; }
 
 /* ---- cards & grids */
