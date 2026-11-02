@@ -159,7 +159,8 @@
   }
 
   /* ------------------------------------------------------------ 3. sandbox */
-  const sb = { cards: [], profile: M.latest_profile, params: Object.assign({}, defaults), shown: null, compareRef: false, profileRes: 'daily', profTok: 0 };
+  const sb = { cards: [], profile: M.latest_profile, params: Object.assign({}, defaults), shown: null, compareRef: false, profileRes: 'daily', profTok: 0,
+    solarSel: [{ value: 'SolS', slot: 0 }, { value: 'SolFlat', slot: 1 }, { value: 'SolN', slot: 2 }] };
 
   function gridCompatible(run) {
     return M.params.every(p => {
@@ -191,15 +192,22 @@
         }),
       }));
     });
-    Object.keys(p.solar).forEach(col => {
-      sb.cards.push(C.makeCard(sGrid, {
-        small: true, title: C.SOLAR_LABEL[col] || col, sub: 'Irradiation, W/m²',
-        build: t => C.build.timeSeries(t, {
-          series: [{ name: C.SOLAR_LABEL[col] || col, color: t.s[0], values: p.solar[col], start: p.start }],
-          mode: sb.profileRes, unit: 'W/m²', dec: 0, yTitle: '', height: 210, rangemode: 'tozero',
+    // all orientations in one chart: up to 3 highlighted in colour, the rest as grey context
+    const cols = Object.keys(p.solar), label = col => C.SOLAR_LABEL[col] || col;
+    sb.solarSel = sb.solarSel.filter(s => cols.includes(s.value));
+    sb.cards.push(C.makeCard(sGrid, {
+      title: 'Solar irradiation by roof orientation',
+      sub: 'kW/m² (kWh/m² per hour). Pick up to 3 orientations to highlight; the others are shown in grey.',
+      controls: (el, redraw) => el.appendChild(C.chips(cols.map(col => ({ value: col, label: label(col) })), sb.solarSel, 3, redraw)),
+      build: t => C.build.timeSeries(t, {
+        series: cols.map(col => {
+          const s = sb.solarSel.find(x => x.value === col);
+          return { name: label(col), values: p.solar[col], start: p.start, color: s ? t.s[s.slot] : t.other, context: !s };
         }),
-      }));
-    });
+        contextLabel: 'Other orientations',
+        mode: sb.profileRes, unit: 'kW/m²', dec: 3, yTitle: 'Irradiation (kW/m²)', height: 340, rangemode: 'tozero',
+      }),
+    }));
   }
 
   /** ?scenario=profile=2025-07-07; industrial demand=20; ...  (the same text "Copy scenario code" produces) */

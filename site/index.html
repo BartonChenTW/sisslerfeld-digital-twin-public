@@ -9,21 +9,27 @@
 </head>
 <body>
   <header class="hero">
-    <div class="hero-map" role="img" aria-label="Topographic map of Stein, Sisseln, Eiken and Münchwilen"><small>Map: &copy; swisstopo</small></div>
     <div class="wrap hero-body">
-      <div>
-        <span class="badge">Prototype</span>
-        <h1>Sisslerfeld energy system digital twin</h1>
+      <div class="hero-text">
+        <div>
+          <span class="badge">Prototype</span>
+          <h1>Sisslerfeld energy system digital twin</h1>
+        </div>
+        <p class="lead" style="color:var(--text-2);max-width:78ch;margin:0">
+          An output of the NCCR Sisslerfeld project, developed by the Urban Energy Systems Lab, Empa.
+          Explore how the energy system of the Sisslerfeld area behaves today and under different
+          assumptions for industry, population, PV, heating, mobility and carbon price.
+        </p>
+        <div class="logos">
+          <img src="assets/nccr_logo.png" alt="NCCR">
+          <img src="assets/empa_logo.png" alt="Empa">
+        </div>
       </div>
-      <p class="lead" style="color:var(--text-2);max-width:78ch;margin:0">
-        An output of the NCCR Sisslerfeld project, developed by the Urban Energy Systems Lab, Empa.
-        Explore how the energy system of the Sisslerfeld area behaves today and under different
-        assumptions for industry, population, PV, heating, mobility and carbon price.
-      </p>
-      <div class="logos">
-        <img src="assets/nccr_logo.png" alt="NCCR">
-        <img src="assets/empa_logo.png" alt="Empa">
-      </div>
+      <figure class="hero-map">
+        <img src="assets/sisslerfeld_map.png" width="732" height="562"
+             alt="Topographic map of the Sisslerfeld area: Stein, Sisseln, Eiken and Münchwilen">
+        <figcaption>Map: &copy; swisstopo</figcaption>
+      </figure>
     </div>
   </header>
 
@@ -101,8 +107,7 @@
         <p class="meta" id="profile-meta"></p>
         <h3 style="margin:12px 0 8px">Demand profiles</h3>
         <div class="grid three" id="profile-demand"></div>
-        <h3 style="margin:18px 0 8px">Solar irradiation by roof orientation</h3>
-        <div class="grid three" id="profile-solar"></div>
+        <div class="grid" id="profile-solar" style="margin-top:18px"></div>
 
         <h3 class="group">3b &middot; Key modelling parameters</h3>
         <div class="sliders" id="sliders"></div>

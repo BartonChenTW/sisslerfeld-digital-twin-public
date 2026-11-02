@@ -133,20 +133,31 @@
     };
   }
 
-  /** time series. series: [{name,color,values(hourly),start}] */
+  /** time series. series: [{name,color,values(hourly),start,context?}]
+   *  context series are drawn underneath as thin grey lines, share one legend entry (o.contextLabel) and skip hover */
   function timeSeries(t, o) {
     const hourly = o.mode === 'hourly';
     const idx = !!o.indexAxis;          // runs from different weather years: align on the simulated year, not on dates
-    const data = o.series.map(s => {
+    let firstContext = true;
+    const traces = o.series.map((s, i) => {
       const vals = hourly ? s.values : dailyMean(s.values);
       const x = idx ? vals.map((_, i) => i + 1) : makeTimes(s.start, vals.length, hourly ? 1 : 24);
+      if (s.context) {
+        const tr = {
+          type: 'scatter', mode: 'lines', name: o.contextLabel || 'Other', x, y: vals, legendgroup: 'context',
+          showlegend: firstContext, legendrank: 1000, line: { color: t.other, width: 1 }, hoverinfo: 'skip',
+        };
+        firstContext = false;
+        return tr;
+      }
       return {
-        type: 'scatter', mode: 'lines', name: s.name, x, y: vals,
+        type: 'scatter', mode: 'lines', name: s.name, x, y: vals, legendrank: i,
         line: { color: s.color, width: 2, shape: 'linear' },
         hovertemplate: (idx ? `${hourly ? 'Hour' : 'Day'} %{x}` : `%{x|%d %b %Y${hourly ? ' %H:%M' : ''}}`) +
           `<br>%{y:,.${o.dec}f} ${o.unit}<extra>${s.name}</extra>`,
       };
     });
+    const data = traces.filter((_, i) => o.series[i].context).concat(traces.filter((_, i) => !o.series[i].context));
     // table twin: monthly means (calendar month, or month n of the simulated year)
     const monthly = o.series.map(s => {
       const x = idx ? null : makeTimes(s.start, s.values.length, 1);
@@ -377,6 +388,40 @@
     return el;
   }
 
+  /** toggle chips for highlighting at most `max` series. selected: [{value, slot}] (mutated); a series keeps its
+   *  colour slot while it stays selected, and the oldest selection is dropped when a new one exceeds `max`. */
+  function chips(options, selected, max, onChange) {
+    const el = document.createElement('span');
+    el.className = 'chips'; el.setAttribute('role', 'group');
+    const paint = () => el.querySelectorAll('button').forEach(b => {
+      const s = selected.find(x => x.value === b.dataset.value);
+      b.setAttribute('aria-pressed', String(!!s));
+      b.querySelector('.sw').style.background = s ? `var(--s${s.slot + 1})` : 'var(--other)';
+    });
+    options.forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.dataset.value = o.value;
+      b.innerHTML = '<span class="sw" aria-hidden="true"></span>';
+      b.appendChild(document.createTextNode(o.label));
+      b.addEventListener('click', () => {
+        const i = selected.findIndex(x => x.value === o.value);
+        if (i >= 0) selected.splice(i, 1);
+        else {
+          if (selected.length >= max) selected.shift();
+          const used = selected.map(x => x.slot);
+          let slot = 0;
+          while (used.includes(slot)) slot++;
+          selected.push({ value: o.value, slot });
+        }
+        paint();
+        onChange();
+      });
+      el.appendChild(b);
+    });
+    paint();
+    return el;
+  }
+
   /** card = {el, redraw()}; build(theme) -> spec */
   function makeCard(parent, o) {
     const art = document.createElement('article');
@@ -426,7 +471,7 @@
   function rerenderAll() { cleanup(); registry.forEach(c => c.redraw()); }
 
   window.DTC = {
-    theme, fmt, makeCard, segmented, cleanup, rerenderAll, makeTimes,
+    theme, fmt, makeCard, segmented, chips, cleanup, rerenderAll, makeTimes,
     DEMAND_SLOT, DEMAND_LABEL, DEMAND_UNIT, SOLAR_LABEL, ecLabel,
     build: {
       timeSeries, costEmission, costBreakdown, emissionBreakdown, supplyBreakdown, heatCapacity, hourlyProfile,
