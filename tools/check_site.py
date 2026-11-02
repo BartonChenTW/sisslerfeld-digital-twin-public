@@ -18,7 +18,7 @@ from pathlib import Path
 
 MAX_FILE_KB = 1500
 MAX_TOTAL_MB = 60
-FORBIDDEN_KEYS = ('Address', 'PostCode', 'xtf_id', 'email', 'Email')
+FORBIDDEN_KEYS = ('Address', 'PostCode', 'xtf_id', 'EGID', 'email', 'Email')
 EMAIL_RE = re.compile(r'[\w.+-]+@[\w-]+\.[\w.-]+')
 # tags that LOAD something (plain <a href> links are navigation and fine), CSS url()/@import
 EXTERNAL_RE = re.compile(
