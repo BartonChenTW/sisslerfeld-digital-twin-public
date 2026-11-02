@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sisslerfeld Energy Digital Twin</title>
+  <meta name="description" content="Interactive, public view of the energy system digital twin of the Sisslerfeld area (NCCR / Empa). Pre-computed simulation results; no live data processing.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-map" role="img" aria-label="Topographic map of Stein, Sisseln, Eiken and Münchwilen"><small>Map: &copy; swisstopo</small></div>
+    <div class="wrap hero-body">
+      <div>
+        <span class="badge">Prototype</span>
+        <h1>Sisslerfeld energy system digital twin</h1>
+      </div>
+      <p class="lead" style="color:var(--text-2);max-width:78ch;margin:0">
+        An output of the NCCR Sisslerfeld project, developed by the Urban Energy Systems Lab, Empa.
+        Explore how the energy system of the Sisslerfeld area behaves today and under different
+        assumptions for industry, population, PV, heating, mobility and carbon price.
+      </p>
+      <div class="logos">
+        <img src="assets/nccr_logo.png" alt="NCCR">
+        <img src="assets/empa_logo.png" alt="Empa">
+      </div>
+    </div>
+  </header>
+
+  <nav class="topnav" aria-label="Sections">
+    <div class="wrap">
+      <a href="#about">About</a>
+      <a href="#live">1 &middot; Energy data</a>
+      <a href="#today">2 &middot; Today's system</a>
+      <a href="#sandbox">3 &middot; Sandbox</a>
+      <a href="#runs">4 &middot; All runs</a>
+      <span class="spacer"></span>
+      <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
+    </div>
+  </nav>
+
+  <div id="fatal" role="alert"></div>
+  <noscript>This page needs JavaScript to draw its charts.</noscript>
+
+  <main>
+    <section class="block" id="about">
+      <div class="wrap">
+        <h2>About this page</h2>
+        <p class="lead">
+          This is a static, read-only copy of the digital twin. All figures are <strong>pre-computed</strong>
+          with the Empa energy-hub model (ehubX) and published here; the page runs entirely in your browser
+          and needs no server. Detailed model inputs (technology and cost parameters, company-level data) are
+          not part of this copy.
+        </p>
+        <div class="notice" id="data-notice"></div>
+        <p class="meta" id="about-meta"></p>
+      </div>
+    </section>
+
+    <section class="block" id="live">
+      <div class="wrap">
+        <h2>1 &middot; Energy data of the area</h2>
+        <p class="lead">Electricity production plants in Stein, Eiken, Münchwilen and Sisseln, and the past year's weather
+          that drives the simulated PV and demand profiles.</p>
+
+        <h3 class="group">1a &middot; Electricity production plants</h3>
+        <p class="meta" id="plants-meta"></p>
+        <div class="grid two" id="plants-grid"></div>
+        <div style="margin-top:14px" id="plants-map"></div>
+
+        <h3 class="group">1b &middot; Weather, past 365 days</h3>
+        <p class="meta" id="weather-meta"></p>
+        <div class="grid two" id="weather-grid"></div>
+      </div>
+    </section>
+
+    <section class="block" id="today">
+      <div class="wrap">
+        <h2>2 &middot; Today's energy system</h2>
+        <p class="lead">Simulation of the Sisslerfeld energy system with the operation of the past 365 days
+          (single-hub model, cost-minimising). Results of the latest reference run.</p>
+        <p class="meta" id="today-meta"></p>
+        <div id="today-tiles"></div>
+        <div id="today-results"></div>
+      </div>
+    </section>
+
+    <section class="block" id="sandbox">
+      <div class="wrap">
+        <h2>3 &middot; Energy system sandbox</h2>
+        <p class="lead">Change the key assumptions and see the simulated system. Each combination is a pre-computed
+          run: if yours has not been simulated yet, you can request it.</p>
+
+        <h3 class="group">3a &middot; Time-series profiles</h3>
+        <div class="toolbar">
+          <label>Weather year (profile):
+            <select id="profile-select"></select>
+          </label>
+          <span class="seg" id="profile-res" role="group" aria-label="Time resolution"></span>
+        </div>
+        <p class="meta" id="profile-meta"></p>
+        <h3 style="margin:12px 0 8px">Demand profiles</h3>
+        <div class="grid three" id="profile-demand"></div>
+        <h3 style="margin:18px 0 8px">Solar irradiation by roof orientation</h3>
+        <div class="grid three" id="profile-solar"></div>
+
+        <h3 class="group">3b &middot; Key modelling parameters</h3>
+        <div class="sliders" id="sliders"></div>
+        <div id="match-status"></div>
+        <div id="sandbox-results"></div>
+      </div>
+    </section>
+
+    <section class="block" id="runs">
+      <div class="wrap">
+        <h2>4 &middot; All simulation runs</h2>
+        <p class="lead">Every pre-computed run. Tick up to three to compare them below.</p>
+        <div id="runs-overview"></div>
+        <div class="toolbar" style="margin-top:16px">
+          <label>Show:
+            <select id="runs-filter">
+              <option value="all">all runs</option>
+              <option value="single-hub">single-hub runs</option>
+              <option value="multi-hub">multi-hub runs</option>
+            </select>
+          </label>
+          <span class="meta" id="runs-count"></span>
+        </div>
+        <div class="runs-wrap"><table class="runs" id="runs-table"></table></div>
+        <h3 class="group">Comparison</h3>
+        <div id="runs-compare"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Contact:</strong> <a id="contact-link" href="#"></a></p>
+      <p><strong>Data and software</strong></p>
+      <ul>
+        <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via opendata.swiss. Street addresses are not shown and coordinates are rounded.</li>
+        <li>Weather: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0).</li>
+        <li>Map and municipality boundaries: &copy; swisstopo.</li>
+        <li>Charts: <a href="https://plotly.com/javascript/">Plotly.js</a> (MIT), bundled with this page.</li>
+        <li>Energy model: ehubX, Urban Energy Systems Lab, Empa.</li>
+      </ul>
+      <p class="meta">Prototype. Results are model outputs under stated assumptions, not forecasts. <span id="repo-link"></span></p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="data/manifest.js"></script>
+  <script src="vendor/plotly-cartesian.min.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
