@@ -433,6 +433,15 @@
     if (o.sub) sub.textContent = o.sub; else sub.remove();
     const plot = art.querySelector('.plot');
     plot.setAttribute('aria-label', o.title);
+    if (o.source) {                      // {text, href}: data source shown under the chart
+      const src = document.createElement('p');
+      src.className = 'src';
+      src.append('Source: ');
+      const a = document.createElement('a');
+      a.href = o.source.href; a.textContent = o.source.text; a.target = '_blank'; a.rel = 'noopener';
+      src.appendChild(a);
+      plot.after(src);
+    }
     const details = art.querySelector('details');
     const tbody = art.querySelector('.tbl-body');
     if (o.controls) o.controls(art.querySelector('.ctrl'), () => card.redraw());

@@ -142,6 +142,9 @@ h3.group { margin: 26px 0 10px; font-size: 1.1rem; }
 .card .plot { width: 100%; }
 .card.small { padding: 10px 10px 4px; }
 .card.small h3 { font-size: .9rem; }
+.card .src { color: var(--muted); font-size: 12px; margin: 2px 0 4px; }
+.card .src a { color: var(--text-2); }
+footer .links a { margin-right: 14px; }
 details.tbl { margin-top: 4px; border-top: 1px solid var(--grid); padding: 6px 0 4px; }
 details.tbl summary { cursor: pointer; font-size: 13px; color: var(--text-2); }
 .tbl-body { overflow: auto; max-height: 320px; margin-top: 6px; }

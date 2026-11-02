@@ -117,18 +117,28 @@
   }
 
   /* ------------------------------------------------------------ footer (one copy for all pages) */
+  const LINKS = {
+    uesl: 'https://www.empa.ch/web/s313',
+    empa: 'https://www.empa.ch/',
+    ehubx: 'https://github.com/uesl-empa/ehubx',
+    plants: 'https://opendata.swiss/en/dataset/elektrizitatsproduktionsanlagen',
+  };
   (function footer() {
     const f = $('site-footer');
     if (!f) return;
     f.innerHTML = `<div class="wrap">
       <p><strong>Contact:</strong> <a id="contact-link" href="#"></a></p>
+      <p class="links"><strong>Links:</strong>
+        <a href="${LINKS.uesl}">Urban Energy Systems Lab</a>
+        <a href="${LINKS.empa}">Empa</a>
+        <a href="${LINKS.ehubx}">ehubX on GitHub</a></p>
       <p><strong>Data and software</strong></p>
       <ul>
-        <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via opendata.swiss. Street addresses are not shown and coordinates are rounded.</li>
+        <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via <a href="${LINKS.plants}">opendata.swiss</a>. Street addresses are not shown and coordinates are rounded.</li>
         <li>Weather: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0).</li>
         <li>Map and municipality boundaries: &copy; swisstopo.</li>
         <li>Charts: <a href="https://plotly.com/javascript/">Plotly.js</a> (MIT), bundled with this page.</li>
-        <li>Energy model: ehubX, Urban Energy Systems Lab, Empa.</li>
+        <li>Energy model: <a href="${LINKS.ehubx}">ehubX</a> (open source, GPL-3.0), <a href="${LINKS.uesl}">Urban Energy Systems Lab</a>, <a href="${LINKS.empa}">Empa</a>.</li>
       </ul>
       <p class="meta">Prototype. Results are model outputs under stated assumptions, not forecasts. <span id="repo-link"></span></p>
     </div>`;
@@ -164,9 +174,10 @@
       `Snapshot of ${plants.snapshot} (latest commissioning ${plants.latest_operation}) · ${plants.rows.length} plants, of which ${pv.length} PV ` +
       `with ${C.fmt(pv.reduce((a, r) => a + (r[2] || 0), 0) / 1000, 1)} MWp. Source: BFE, opendata.swiss.`;
     const grid = $('plants-grid');
-    C.makeCard(grid, { title: 'Installed PV capacity by year', sub: 'kWp, by municipality', build: t => C.build.pvByYear(t, plants) });
-    C.makeCard(grid, { title: 'Installed power by technology', sub: 'kW, by municipality', build: t => C.build.powerByCategory(t, plants) });
-    C.makeCard($('plants-map'), { title: 'Electricity production plants', sub: 'Marker area is proportional to power; positions are rounded', build: t => C.build.plantMap(t, plants, geo) });
+    const source = { text: `Swiss Federal Office of Energy (BFE), Electricity production plants, opendata.swiss (snapshot ${plants.snapshot})`, href: LINKS.plants };
+    C.makeCard(grid, { title: 'Installed PV capacity by year', sub: 'kWp, by municipality', source, build: t => C.build.pvByYear(t, plants) });
+    C.makeCard(grid, { title: 'Installed power by technology', sub: 'kW, by municipality', source, build: t => C.build.powerByCategory(t, plants) });
+    C.makeCard($('plants-map'), { title: 'Electricity production plants', sub: 'Marker area is proportional to power; positions are rounded', source, build: t => C.build.plantMap(t, plants, geo) });
   }
 
   async function initWeather() {
