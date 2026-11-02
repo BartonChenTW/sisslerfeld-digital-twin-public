@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sisslerfeld Energy Digital Twin</title>
+  <title data-i18n="title.home">Sisslerfeld Energy Digital Twin</title>
   <meta name="description" content="Interactive, public view of the energy system digital twin of the Sisslerfeld area (NCCR / Empa). Pre-computed simulation results; no live data processing.">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,10 +12,10 @@
     <div class="wrap hero-body">
       <div class="hero-text">
         <div>
-          <span class="badge">Prototype</span>
-          <h1>Sisslerfeld energy system digital twin</h1>
+          <span class="badge" data-i18n="hero.badge">Prototype</span>
+          <h1 data-i18n="hero.h1">Sisslerfeld energy system digital twin</h1>
         </div>
-        <p class="lead" style="color:var(--text-2);max-width:78ch;margin:0">
+        <p class="lead" data-i18n="hero.lead" style="color:var(--text-2);max-width:78ch;margin:0">
           An output of the NCCR Sisslerfeld project, developed by the Urban Energy Systems Lab, Empa.
           Explore how the energy system of the Sisslerfeld area behaves today and under different
           assumptions for industry, population, PV, heating, mobility and carbon price.
@@ -28,31 +28,32 @@
       <figure class="hero-map">
         <img src="assets/sisslerfeld_map.png" width="732" height="562"
              alt="Topographic map of the Sisslerfeld area: Stein, Sisseln, Eiken and Münchwilen">
-        <figcaption>Map: &copy; swisstopo</figcaption>
+        <figcaption data-i18n="hero.map">Map: &copy; swisstopo</figcaption>
       </figure>
     </div>
   </header>
 
   <nav class="topnav" aria-label="Pages">
     <div class="wrap">
-      <a href="index.html" class="brand" aria-current="page">Overview</a>
-      <a href="data.html">1 &middot; Energy data</a>
-      <a href="today.html">2 &middot; Today's system</a>
-      <a href="sandbox.html">3 &middot; Sandbox</a>
-      <a href="runs.html">4 &middot; All runs</a>
+      <a href="index.html" data-i18n="nav.home" class="brand" aria-current="page">Overview</a>
+      <a href="data.html" data-i18n="nav.data">1 &middot; Energy data</a>
+      <a href="today.html" data-i18n="nav.today">2 &middot; Today's system</a>
+      <a href="sandbox.html" data-i18n="nav.sandbox">3 &middot; Sandbox</a>
+      <a href="runs.html" data-i18n="nav.runs">4 &middot; All runs</a>
       <span class="spacer"></span>
+      <button id="lang-btn" type="button" lang="de">Deutsch</button>
       <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
     </div>
   </nav>
 
   <div id="fatal" role="alert"></div>
-  <noscript>This page needs JavaScript to draw its charts.</noscript>
+  <noscript data-i18n="noscript">This page needs JavaScript to draw its charts.</noscript>
 
   <main>
     <section class="block" id="about">
       <div class="wrap">
-        <h2>About this page</h2>
-        <p class="lead">
+        <h2 data-i18n="about.h2">About this page</h2>
+        <p class="lead" data-i18n="about.lead">
           This is a static, read-only copy of the digital twin. All figures are <strong>pre-computed</strong>
           with the Empa energy-hub model (ehubX) and published here; the page runs entirely in your browser
           and needs no server. Detailed model inputs (technology and cost parameters, company-level data) are
@@ -61,22 +62,22 @@
         <div class="notice" id="data-notice"></div>
         <p class="meta" id="about-meta"></p>
 
-        <h3 class="group">Explore</h3>
+        <h3 class="group" data-i18n="about.explore">Explore</h3>
         <div class="explore">
           <a class="go" href="data.html">
-            <span class="n">1</span><strong>Energy data of the area</strong>
-            <span>Electricity production plants in the four municipalities and the weather of the past year.</span>
+            <span class="n">1</span><strong data-i18n="go.data.t">Energy data of the area</strong>
+            <span data-i18n="go.data.d">Electricity production plants in the four municipalities and the weather of the past year.</span>
           </a>
           <a class="go" href="today.html">
-            <span class="n">2</span><strong>Today's energy system</strong>
+            <span class="n">2</span><strong data-i18n="go.today.t">Today's energy system</strong>
             <span id="go-today">The latest monthly simulation with the weather of the past 365 days.</span>
           </a>
           <a class="go" href="sandbox.html">
-            <span class="n">3</span><strong>Energy system sandbox</strong>
-            <span>Change industry, population, PV, heating, mobility and carbon price; request scenarios that are not simulated yet.</span>
+            <span class="n">3</span><strong data-i18n="go.sandbox.t">Energy system sandbox</strong>
+            <span data-i18n="go.sandbox.d">Change industry, population, PV, heating, mobility and carbon price; request scenarios that are not simulated yet.</span>
           </a>
           <a class="go" href="runs.html">
-            <span class="n">4</span><strong>All simulation runs</strong>
+            <span class="n">4</span><strong data-i18n="go.runs.t">All simulation runs</strong>
             <span id="go-runs">Every pre-computed run in one table; compare up to three.</span>
           </a>
         </div>
@@ -87,6 +88,7 @@
   <footer id="site-footer"></footer>
 
   <script src="config.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/data.js"></script>
   <script src="data/manifest.js"></script>
   <script src="js/charts.js"></script>

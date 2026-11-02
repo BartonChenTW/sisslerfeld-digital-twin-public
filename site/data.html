@@ -3,39 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Energy data · Sisslerfeld Energy Digital Twin</title>
+  <title data-i18n="title.data">Energy data · Sisslerfeld Energy Digital Twin</title>
   <meta name="description" content="Electricity production plants and the weather of the past year in the Sisslerfeld area.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="data">
   <nav class="topnav" aria-label="Pages">
     <div class="wrap">
-      <a href="index.html" class="brand">Overview</a>
-      <a href="data.html" aria-current="page">1 &middot; Energy data</a>
-      <a href="today.html">2 &middot; Today's system</a>
-      <a href="sandbox.html">3 &middot; Sandbox</a>
-      <a href="runs.html">4 &middot; All runs</a>
+      <a href="index.html" data-i18n="nav.home" class="brand">Overview</a>
+      <a href="data.html" data-i18n="nav.data" aria-current="page">1 &middot; Energy data</a>
+      <a href="today.html" data-i18n="nav.today">2 &middot; Today's system</a>
+      <a href="sandbox.html" data-i18n="nav.sandbox">3 &middot; Sandbox</a>
+      <a href="runs.html" data-i18n="nav.runs">4 &middot; All runs</a>
       <span class="spacer"></span>
+      <button id="lang-btn" type="button" lang="de">Deutsch</button>
       <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
     </div>
   </nav>
 
   <div id="fatal" role="alert"></div>
-  <noscript>This page needs JavaScript to draw its charts.</noscript>
+  <noscript data-i18n="noscript">This page needs JavaScript to draw its charts.</noscript>
 
   <main>
     <section class="block" id="live">
       <div class="wrap">
-        <h2>1 &middot; Energy data of the area</h2>
-        <p class="lead">Electricity production plants in Stein, Eiken, Münchwilen and Sisseln, and the past year's weather
+        <h2 data-i18n="data.h2">1 &middot; Energy data of the area</h2>
+        <p class="lead" data-i18n="data.lead">Electricity production plants in Stein, Eiken, Münchwilen and Sisseln, and the past year's weather
           that drives the simulated PV and demand profiles.</p>
 
-        <h3 class="group">1a &middot; Electricity production plants</h3>
+        <h3 class="group" data-i18n="data.h3a">1a &middot; Electricity production plants</h3>
         <p class="meta" id="plants-meta"></p>
         <div class="grid two" id="plants-grid"></div>
         <div style="margin-top:14px" id="plants-map"></div>
 
-        <h3 class="group">1b &middot; Weather, past 365 days</h3>
+        <h3 class="group" data-i18n="data.h3b">1b &middot; Weather, past 365 days</h3>
         <p class="meta" id="weather-meta"></p>
         <div class="grid two" id="weather-grid"></div>
       </div>
@@ -45,6 +46,7 @@
   <footer id="site-footer"></footer>
 
   <script src="config.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/data.js"></script>
   <script src="data/manifest.js"></script>
   <script src="vendor/plotly-cartesian.min.js"></script>

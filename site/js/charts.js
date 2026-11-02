@@ -10,6 +10,9 @@
 (function () {
   'use strict';
   const SANS = 'system-ui,-apple-system,"Segoe UI",sans-serif';
+  const I18N = window.I18N || { L: s => s, locale: 'en-US', lang: 'en' };
+  const L = I18N.L;
+  if (I18N.lang === 'de' && window.Plotly) window.Plotly.register(I18N.plotlyLocale);
   const registry = [];
 
   /* ------------------------------------------------------------ utils */
@@ -26,7 +29,7 @@
 
   function fmt(v, d = 1) {
     if (v === null || v === undefined || Number.isNaN(v)) return '–';
-    return Number(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+    return Number(v).toLocaleString(I18N.locale, { minimumFractionDigits: d, maximumFractionDigits: d });
   }
 
   const iso = ms => new Date(ms).toISOString().slice(0, 16).replace('T', ' ');
@@ -68,7 +71,7 @@
     SolS: 'South', SolSw: 'South-west', SolW: 'West', SolNw: 'North-west', SolGround: 'Ground-mounted',
   };
 
-  function ecLabel(M, ec) { return (M.names.EC && M.names.EC[ec]) || ec; }
+  function ecLabel(M, ec) { return L((M.names.EC && M.names.EC[ec]) || ec); }
   function ecColor(t, ec) { return EC_SLOT[ec] ? t.s[EC_SLOT[ec] - 1] : t.other; }
 
   /* ------------------------------------------------------------ base layout */
@@ -92,7 +95,7 @@
     return Object.assign(l, extra || {});
   }
 
-  function axisTitle(t, text) { return { text, font: { color: t.muted, size: 12 }, standoff: 8 }; }
+  function axisTitle(t, text) { return { text: L(text), font: { color: t.muted, size: 12 }, standoff: 8 }; }
 
   /* ------------------------------------------------------------ builders: each returns {data, layout, height, table} */
 
@@ -110,7 +113,7 @@
     const data = o.series.map(s => ({
       type: 'bar', orientation: 'h', name: s.name, y: names, x: s.vals, width: thick,
       marker: { color: s.color, line: { color: t.surface, width: 2 } },
-      hovertemplate: `%{y}<br>${s.name}: %{x:,.${o.dec}f} ${o.unit}<extra></extra>`,
+      hovertemplate: `%{y}<br>${s.name}: %{x:,.${o.dec}f} ${L(o.unit)}<extra></extra>`,
     }));
     const annotations = names.map((nm, i) => {
       const tot = o.series.reduce((a, s) => a + Math.max(0, s.vals[i] || 0), 0);
@@ -127,7 +130,7 @@
         showlegend: o.series.length > 1,
       }),
       table: {
-        columns: ['Run'].concat(o.series.map(s => `${s.name} (${o.unit})`)),
+        columns: [L('Run')].concat(o.series.map(s => `${s.name} (${L(o.unit)})`)),
         rows: names.map((nm, i) => [nm].concat(o.series.map(s => fmt(s.vals[i], o.dec)))),
       },
     };
@@ -144,7 +147,7 @@
       const x = idx ? vals.map((_, i) => i + 1) : makeTimes(s.start, vals.length, hourly ? 1 : 24);
       if (s.context) {
         const tr = {
-          type: 'scatter', mode: 'lines', name: o.contextLabel || 'Other', x, y: vals, legendgroup: 'context',
+          type: 'scatter', mode: 'lines', name: o.contextLabel || L('Other'), x, y: vals, legendgroup: 'context',
           showlegend: firstContext, legendrank: 1000, line: { color: t.other, width: 1 }, hoverinfo: 'skip',
         };
         firstContext = false;
@@ -153,8 +156,8 @@
       return {
         type: 'scatter', mode: 'lines', name: s.name, x, y: vals, legendrank: i,
         line: { color: s.color, width: 2, shape: 'linear' },
-        hovertemplate: (idx ? `${hourly ? 'Hour' : 'Day'} %{x}` : `%{x|%d %b %Y${hourly ? ' %H:%M' : ''}}`) +
-          `<br>%{y:,.${o.dec}f} ${o.unit}<extra>${s.name}</extra>`,
+        hovertemplate: (idx ? `${L(hourly ? 'Hour' : 'Day')} %{x}` : `%{x|%d %b %Y${hourly ? ' %H:%M' : ''}}`) +
+          `<br>%{y:,.${o.dec}f} ${L(o.unit)}<extra>${s.name}</extra>`,
       };
     });
     const data = traces.filter((_, i) => o.series[i].context).concat(traces.filter((_, i) => !o.series[i].context));
@@ -163,7 +166,7 @@
       const x = idx ? null : makeTimes(s.start, s.values.length, 1);
       const acc = {};
       s.values.forEach((v, i) => {
-        const k = idx ? 'Month ' + String(Math.min(12, Math.floor(i / 730) + 1)).padStart(2, '0') : x[i].slice(0, 7);
+        const k = idx ? L('Month {n}', { n: String(Math.min(12, Math.floor(i / 730) + 1)).padStart(2, '0') }) : x[i].slice(0, 7);
         (acc[k] = acc[k] || []).push(v);
       });
       return acc;
@@ -180,7 +183,7 @@
         showlegend: o.series.length > 1, hovermode: 'x unified',
       }),
       table: {
-        columns: [idx ? 'Month of the simulated year (mean)' : 'Month (mean)'].concat(o.series.map(s => `${s.name} (${o.unit})`)),
+        columns: [L(idx ? 'Month of the simulated year (mean)' : 'Month (mean)')].concat(o.series.map(s => `${s.name} (${L(o.unit)})`)),
         rows: months.map(m => [m].concat(monthly.map(acc => acc[m] ? fmt(acc[m].reduce((a, b) => a + b, 0) / acc[m].length, o.dec) : '–'))),
       },
     };
@@ -191,7 +194,7 @@
     const sel = selectedIds.slice(0, 3);
     const others = M.runs.filter(r => !sel.includes(r.id));
     const data = [{
-      type: 'scatter', mode: 'markers', name: 'Other runs',
+      type: 'scatter', mode: 'markers', name: L('Other runs'),
       x: others.map(r => r.summary.cost_MCHF), y: others.map(r => r.summary.carbon_kt),
       text: others.map(r => r.name),
       marker: { color: t.other, size: 9, line: { color: t.surface, width: 2 } },
@@ -214,12 +217,12 @@
         yaxis: axisStyle(t, { title: axisTitle(t, 'Emissions (ktCO2-eq/yr)'), zeroline: false }),
         hovermode: 'closest',
       }),
-      table: { columns: ['Run', 'Profile', 'Total cost (MCHF/yr)', 'Emissions (ktCO2-eq/yr)'], rows },
+      table: { columns: ['Run', 'Profile', 'Total cost (MCHF/yr)', 'Emissions (ktCO2-eq/yr)'].map(c => L(c)), rows },
     };
   }
 
   function costBreakdown(t, M, runs, ctx) {
-    const series = M.cost_labels.map((lab, i) => ({ name: lab, color: t.s[i], vals: runs.map(r => (r.costs_MCHF[lab] || 0)) }))
+    const series = M.cost_labels.map((lab, i) => ({ name: L(lab), color: t.s[i], vals: runs.map(r => (r.costs_MCHF[lab] || 0)) }))
       .filter(s => s.vals.some(v => Math.abs(v) > 1e-9));
     return stackedBars(t, { ctx, runNames: runs.map(r => r.name), series, unit: 'MCHF/yr', dec: 1, xTitle: 'Cost (MCHF/yr), income negative', netLabel: true });
   }
@@ -234,7 +237,7 @@
     });
     const series = sorted.map(k => {
       const [ec, dir] = k.split('|');
-      return { name: ecLabel(M, ec) + (dir === 'export' ? ' (export credit)' : ''), color: ecColor(t, ec), vals: runs.map(r => r.emissions_t[k] || 0) };
+      return { name: ecLabel(M, ec) + (dir === 'export' ? L(' (export credit)') : ''), color: ecColor(t, ec), vals: runs.map(r => r.emissions_t[k] || 0) };
     });
     return stackedBars(t, { ctx, runNames: runs.map(r => r.name), series, unit: 'tCO2/yr', dec: 0, xTitle: 'Carbon emissions (tCO2-eq/yr)' });
   }
@@ -245,8 +248,8 @@
     const order = Object.keys(EC_SLOT);
     const list = Array.from(ecs).sort((a, b) => (order.indexOf(a) < 0 ? 99 : order.indexOf(a)) - (order.indexOf(b) < 0 ? 99 : order.indexOf(b)));
     const series = list.map(ec => ({ name: ecLabel(M, ec), color: ecColor(t, ec), vals: runs.map(r => r.import_GWh[ec] || 0) }));
-    series.push({ name: 'PV self-consumption', color: t.s[EC_SLOT.pv_self - 1], vals: runs.map(r => r.pv_GWh.self || 0) });
-    series.push({ name: 'PV export', color: t.s[EC_SLOT.pv_export - 1], vals: runs.map(r => r.pv_GWh.export || 0) });
+    series.push({ name: L('PV self-consumption'), color: t.s[EC_SLOT.pv_self - 1], vals: runs.map(r => r.pv_GWh.self || 0) });
+    series.push({ name: L('PV export'), color: t.s[EC_SLOT.pv_export - 1], vals: runs.map(r => r.pv_GWh.export || 0) });
     return stackedBars(t, {
       ctx, runNames: runs.map(r => r.name), series: series.filter(s => s.vals.some(v => v > 1e-9)),
       unit: 'GWh/yr', dec: 1, xTitle: 'Energy supply (GWh/yr)',
@@ -254,7 +257,7 @@
   }
 
   function heatCapacity(t, M, runs, ctx) {
-    const series = M.heat_techs.map((nm, i) => ({ name: nm, color: t.s[i], vals: runs.map(r => r.heat_cap_MW[nm] || 0) }))
+    const series = M.heat_techs.map((nm, i) => ({ name: L(nm), color: t.s[i], vals: runs.map(r => r.heat_cap_MW[nm] || 0) }))
       .filter(s => s.vals.some(v => v > 1e-9));
     return stackedBars(t, { ctx, runNames: runs.map(r => r.name), series, unit: 'MW', dec: 1, xTitle: 'Installed heating capacity (MW)' });
   }
@@ -284,7 +287,7 @@
         yaxis: axisStyle(t, { title: axisTitle(t, 'Installed PV capacity (kWp)') }),
       }),
       table: {
-        columns: ['Year'].concat(muns.map(m => m + ' (kWp)')),
+        columns: [L('Year')].concat(muns.map(m => m + ' (kWp)')),
         rows: years.map((y, k) => [y].concat(data.map(d => fmt(d.y[k], 0)))),
       },
     };
@@ -296,11 +299,11 @@
     const catOrder = Object.keys(CAT_SLOT);
     cats.sort((a, b) => (catOrder.indexOf(a) < 0 ? 99 : catOrder.indexOf(a)) - (catOrder.indexOf(b) < 0 ? 99 : catOrder.indexOf(b)));
     const data = cats.map(c => ({
-      type: 'bar', name: c, x: muns,
+      type: 'bar', name: L(c), x: muns,
       y: muns.map(m => plants.rows.filter(r => r[0] === m && r[1] === c).reduce((a, r) => a + (r[2] || 0), 0)),
       width: 0.4,
       marker: { color: CAT_SLOT[c] ? t.s[CAT_SLOT[c] - 1] : t.other, line: { color: t.surface, width: 2 } },
-      hovertemplate: `%{x}<br>${c}: %{y:,.0f} kW<extra></extra>`,
+      hovertemplate: `%{x}<br>${L(c)}: %{y:,.0f} kW<extra></extra>`,
     }));
     return {
       data, height: 340,
@@ -310,7 +313,7 @@
         yaxis: axisStyle(t, { title: axisTitle(t, 'Installed power (kW)') }),
       }),
       table: {
-        columns: ['Municipality'].concat(cats.map(c => c + ' (kW)')),
+        columns: [L('Municipality')].concat(cats.map(c => L(c) + ' (kW)')),
         rows: muns.map((m, k) => [m].concat(data.map(d => fmt(d.y[k], 0)))),
       },
     };
@@ -335,8 +338,8 @@
     cats.forEach(c => {
       const rr = withXY.filter(r => r[1] === c).sort((a, b) => (b[2] || 0) - (a[2] || 0));   // small ones on top
       data.push({
-        type: 'scatter', mode: 'markers', name: c, x: rr.map(r => r[5]), y: rr.map(r => r[4]),
-        text: rr.map(r => `${c}<br>${r[0]} · ${fmt(r[2], 1)} kW · since ${r[3]}`),
+        type: 'scatter', mode: 'markers', name: L(c), x: rr.map(r => r[5]), y: rr.map(r => r[4]),
+        text: rr.map(r => `${L(c)}<br>${r[0]} · ${fmt(r[2], 1)} kW · ${L('since')} ${r[3]}`),
         hovertemplate: '%{text}<extra></extra>',
         marker: {
           color: CAT_SLOT[c] ? t.s[CAT_SLOT[c] - 1] : t.other, opacity: 0.8, sizemode: 'diameter',
@@ -368,9 +371,9 @@
         yaxis: axisStyle(t, { visible: false, showgrid: false, zeroline: false, scaleanchor: 'x', scaleratio: 1 / Math.cos(lat0 * Math.PI / 180) }),
       }),
       table: {
-        columns: ['Municipality', 'Category', 'Power (kW)', 'Since'],
-        rows: plants.rows.slice().sort((a, b) => (b[2] || 0) - (a[2] || 0)).slice(0, 60).map(r => [r[0], r[1], fmt(r[2], 1), r[3]]),
-        note: 'Largest 60 plants; coordinates are rounded and addresses are not published.',
+        columns: ['Municipality', 'Category', 'Power (kW)', 'Since'].map(c => L(c)),
+        rows: plants.rows.slice().sort((a, b) => (b[2] || 0) - (a[2] || 0)).slice(0, 60).map(r => [r[0], L(r[1]), fmt(r[2], 1), r[3]]),
+        note: L('Largest 60 plants; coordinates are rounded and addresses are not published.'),
       },
     };
   }
@@ -440,7 +443,7 @@
     const art = document.createElement('article');
     art.className = 'card' + (o.small ? ' small' : '');
     art.innerHTML = '<header><div><h3></h3><p class="sub"></p></div><div class="ctrl"></div></header>' +
-      '<div class="plot" role="img"></div><details class="tbl"><summary>Table view</summary><div class="tbl-body"></div></details>';
+      '<div class="plot" role="img"></div><details class="tbl"><summary>' + L('Table view') + '</summary><div class="tbl-body"></div></details>';
     art.querySelector('h3').textContent = o.title;
     const sub = art.querySelector('.sub');
     if (o.sub) sub.textContent = o.sub; else sub.remove();
@@ -449,7 +452,7 @@
     if (o.source) {                      // {text, href}: data source shown under the chart
       const src = document.createElement('p');
       src.className = 'src';
-      src.append('Source: ');
+      src.append(L('Source: '));
       const a = document.createElement('a');
       a.href = o.source.href; a.textContent = o.source.text; a.target = '_blank'; a.rel = 'noopener';
       src.appendChild(a);
@@ -467,7 +470,7 @@
         const spec = o.build(theme(), { width: card._w });
         plot.style.height = spec.height + 'px';
         window.Plotly.react(plot, spec.data, Object.assign({ height: spec.height, autosize: true }, spec.layout),
-          { displayModeBar: false, responsive: true });
+          { displayModeBar: false, responsive: true, locale: I18N.lang === 'de' ? 'de-CH' : 'en-US' });
         card.spec = spec;
         if (details.open) tbody.innerHTML = tableHTML(spec.table);
       },

@@ -3,44 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>All runs · Sisslerfeld Energy Digital Twin</title>
+  <title data-i18n="title.runs">All runs · Sisslerfeld Energy Digital Twin</title>
   <meta name="description" content="All pre-computed simulation runs of the Sisslerfeld energy digital twin; compare up to three.">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="runs">
   <nav class="topnav" aria-label="Pages">
     <div class="wrap">
-      <a href="index.html" class="brand">Overview</a>
-      <a href="data.html">1 &middot; Energy data</a>
-      <a href="today.html">2 &middot; Today's system</a>
-      <a href="sandbox.html">3 &middot; Sandbox</a>
-      <a href="runs.html" aria-current="page">4 &middot; All runs</a>
+      <a href="index.html" data-i18n="nav.home" class="brand">Overview</a>
+      <a href="data.html" data-i18n="nav.data">1 &middot; Energy data</a>
+      <a href="today.html" data-i18n="nav.today">2 &middot; Today's system</a>
+      <a href="sandbox.html" data-i18n="nav.sandbox">3 &middot; Sandbox</a>
+      <a href="runs.html" data-i18n="nav.runs" aria-current="page">4 &middot; All runs</a>
       <span class="spacer"></span>
+      <button id="lang-btn" type="button" lang="de">Deutsch</button>
       <button id="theme-btn" type="button" aria-label="Switch colour theme">Theme: auto</button>
     </div>
   </nav>
 
   <div id="fatal" role="alert"></div>
-  <noscript>This page needs JavaScript to draw its charts.</noscript>
+  <noscript data-i18n="noscript">This page needs JavaScript to draw its charts.</noscript>
 
   <main>
     <section class="block" id="runs">
       <div class="wrap">
-        <h2>4 &middot; All simulation runs</h2>
-        <p class="lead">Every pre-computed run. Tick up to three to compare them below.</p>
+        <h2 data-i18n="runs.h2">4 &middot; All simulation runs</h2>
+        <p class="lead" data-i18n="runs.lead">Every pre-computed run. Tick up to three to compare them below.</p>
         <div id="runs-overview"></div>
         <div class="toolbar" style="margin-top:16px">
-          <label>Show:
+          <label><span data-i18n="runs.show">Show:</span>
             <select id="runs-filter">
-              <option value="all">all runs</option>
-              <option value="single-hub">single-hub runs</option>
-              <option value="multi-hub">multi-hub runs</option>
+              <option value="all" data-i18n="runs.all">all runs</option>
+              <option value="single-hub" data-i18n="runs.single">single-hub runs</option>
+              <option value="multi-hub" data-i18n="runs.multi">multi-hub runs</option>
             </select>
           </label>
           <span class="meta" id="runs-count"></span>
         </div>
         <div class="runs-wrap"><table class="runs" id="runs-table"></table></div>
-        <h3 class="group">Comparison</h3>
+        <h3 class="group" data-i18n="runs.compare">Comparison</h3>
         <div id="runs-compare"></div>
       </div>
     </section>
@@ -49,6 +50,7 @@
   <footer id="site-footer"></footer>
 
   <script src="config.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/data.js"></script>
   <script src="data/manifest.js"></script>
   <script src="vendor/plotly-cartesian.min.js"></script>

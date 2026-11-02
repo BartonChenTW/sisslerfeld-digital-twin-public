@@ -36,6 +36,11 @@ tools/check_site.py  sanity checks (also run by CI before every deploy)
 .github/workflows/pages.yml   deploys site/ to GitHub Pages
 ```
 
+**Languages:** English and German (Switzerland). The button in the top bar switches; `?lang=de` / `?lang=en`
+opens a page in a given language (otherwise the stored choice, else the browser language). All translations are in
+`site/js/i18n.js`: script texts are looked up by their English wording, static page text by `data-i18n` keys.
+New visible text needs an entry there, otherwise it shows in English.
+
 Data files are plain scripts that call `window.DT.set("<key>", {...})`, so the page does not depend on
 `fetch()` and works from `file://` as well.
 
