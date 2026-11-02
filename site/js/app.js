@@ -128,10 +128,6 @@
     if (!f) return;
     f.innerHTML = `<div class="wrap">
       <p><strong>Contact:</strong> <a id="contact-link" href="#"></a></p>
-      <p class="links"><strong>Links:</strong>
-        <a href="${LINKS.uesl}">Urban Energy Systems Lab</a>
-        <a href="${LINKS.empa}">Empa</a>
-        <a href="${LINKS.ehubx}">ehubX on GitHub</a></p>
       <p><strong>Data and software</strong></p>
       <ul>
         <li>Electricity production plants: Swiss Federal Office of Energy (BFE), via <a href="${LINKS.plants}">opendata.swiss</a>. Street addresses are not shown and coordinates are rounded.</li>
@@ -177,7 +173,7 @@
     const source = { text: `Swiss Federal Office of Energy (BFE), Electricity production plants, opendata.swiss (snapshot ${plants.snapshot})`, href: LINKS.plants };
     C.makeCard(grid, { title: 'Installed PV capacity by year', sub: 'kWp, by municipality', source, build: t => C.build.pvByYear(t, plants) });
     C.makeCard(grid, { title: 'Installed power by technology', sub: 'kW, by municipality', source, build: t => C.build.powerByCategory(t, plants) });
-    C.makeCard($('plants-map'), { title: 'Electricity production plants', sub: 'Marker area is proportional to power; positions are rounded', source, build: t => C.build.plantMap(t, plants, geo) });
+    C.makeCard($('plants-map'), { title: 'Electricity production plants', sub: 'Marker size shows the installed power (log scale, see key); positions are rounded', source, build: t => C.build.plantMap(t, plants, geo) });
   }
 
   async function initWeather() {

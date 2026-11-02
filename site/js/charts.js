@@ -326,21 +326,34 @@
     });
     const withXY = plants.rows.filter(r => r[4] !== null && r[5] !== null);
     const maxP = Math.max.apply(null, withXY.map(r => r[2] || 0));
+    // powers span 3 kW to several MW: marker diameter on a log scale (6 px at <= 1 kW, 36 px at the largest plant)
+    const D_MIN = 6, D_MAX = 36, lmax = Math.log10(Math.max(maxP, 10));
+    const diam = p => D_MIN + (D_MAX - D_MIN) * Math.max(0, Math.log10(Math.max(p || 0, 1))) / lmax;
     const cats = Array.from(new Set(withXY.map(r => r[1])));
     const catOrder = Object.keys(CAT_SLOT);
     cats.sort((a, b) => (catOrder.indexOf(a) < 0 ? 99 : catOrder.indexOf(a)) - (catOrder.indexOf(b) < 0 ? 99 : catOrder.indexOf(b)));
     cats.forEach(c => {
-      const rr = withXY.filter(r => r[1] === c);
+      const rr = withXY.filter(r => r[1] === c).sort((a, b) => (b[2] || 0) - (a[2] || 0));   // small ones on top
       data.push({
         type: 'scatter', mode: 'markers', name: c, x: rr.map(r => r[5]), y: rr.map(r => r[4]),
         text: rr.map(r => `${c}<br>${r[0]} · ${fmt(r[2], 1)} kW · since ${r[3]}`),
         hovertemplate: '%{text}<extra></extra>',
         marker: {
-          color: CAT_SLOT[c] ? t.s[CAT_SLOT[c] - 1] : t.other, opacity: 0.85, sizemode: 'area',
-          size: rr.map(r => r[2] || 0), sizeref: (2 * maxP) / (34 * 34), sizemin: 8,
-          line: { color: t.surface, width: 2 },
+          color: CAT_SLOT[c] ? t.s[CAT_SLOT[c] - 1] : t.other, opacity: 0.8, sizemode: 'diameter',
+          size: rr.map(r => diam(r[2])), line: { color: t.surface, width: 1 },
         },
       });
+    });
+    // size key in the lower left corner of the map
+    const xs = [], ys = [];
+    geo.municipalities.forEach(m => m.rings.forEach(ring => ring.forEach(p => { xs.push(p[0]); ys.push(p[1]); })));
+    const x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    const keys = [[10, '10 kW'], [100, '100 kW'], [1000, '1 MW']].concat(maxP >= 5000 ? [[maxP, fmt(maxP / 1000, 1) + ' MW']] : []);
+    const kx = keys.map((_, i) => x0 + (x1 - x0) * (0.02 + 0.07 * i)), ky = keys.map(() => y0 + (y1 - y0) * 0.04);
+    data.push({
+      type: 'scatter', mode: 'markers+text', x: kx, y: ky, text: keys.map(k => k[1]), textposition: 'top center',
+      textfont: { color: t.muted, size: 11 }, hoverinfo: 'skip', showlegend: false, cliponaxis: false,
+      marker: { size: keys.map(k => diam(k[0])), color: 'rgba(0,0,0,0)', line: { color: t.muted, width: 1 } },
     });
     const annotations = geo.municipalities.map(m => {
       const pts = m.rings.reduce((a, ring) => a.concat(ring), []);
