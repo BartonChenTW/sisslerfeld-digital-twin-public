@@ -166,7 +166,7 @@
     $('about-meta').textContent = L('Data build {built} · latest weather profile {profile} · plant data snapshot {plants} · {n} simulation runs',
       { built: M.built, profile: M.latest_profile, plants: M.plants_snapshot, n: M.runs.length });
     const r = runsById[todayRunId()];
-    $('go-today').textContent = L('The latest monthly simulation (run {name}, weather up to {profile}): {cost} MCHF/yr, {co2} ktCO2-eq/yr.',
+    $('go-today').textContent = L('The latest quarterly simulation (run {name}, weather up to {profile}): {cost} MCHF/yr, {co2} ktCO2-eq/yr.',
       { name: r.name, profile: r.profile, cost: C.fmt(r.summary.cost_MCHF, 1), co2: C.fmt(r.summary.carbon_kt, 1) });
     $('go-runs').textContent = L('All {n} pre-computed runs in one table; compare up to three.', { n: M.runs.length });
   }

@@ -81,8 +81,8 @@
       'Prototyp: Die Ergebnisse sind Modellrechnungen unter den genannten Annahmen, keine Prognosen, und können sich mit Weiterentwicklungen des Modells ändern.',
     'Data build {built} · latest weather profile {profile} · plant data snapshot {plants} · {n} simulation runs':
       'Datenstand {built} · neuestes Wetterprofil {profile} · Anlagendaten vom {plants} · {n} Simulationsläufe',
-    'The latest monthly simulation (run {name}, weather up to {profile}): {cost} MCHF/yr, {co2} ktCO2-eq/yr.':
-      'Die neueste Monatssimulation (Lauf {name}, Wetter bis {profile}): {cost} Mio. CHF/a, {co2} kt CO2-eq/a.',
+    'The latest quarterly simulation (run {name}, weather up to {profile}): {cost} MCHF/yr, {co2} ktCO2-eq/yr.':
+      'Die neueste Quartalssimulation (Lauf {name}, Wetter bis {profile}): {cost} Mio. CHF/a, {co2} kt CO2-eq/a.',
     'All {n} pre-computed runs in one table; compare up to three.': 'Alle {n} vorberechneten Läufe in einer Tabelle; bis zu drei vergleichen.',
     // energy data
     'Snapshot of {snap} (latest commissioning {latest}) · {n} plants, of which {npv} PV with {mwp} MWp. Source: BFE, opendata.swiss.':
@@ -171,7 +171,7 @@
     'data.h3a': '1a · Elektrizitätsproduktionsanlagen', 'data.h3b': '1b · Wetter der letzten 365 Tage',
     'today.h2': '2 · Heutiges Energiesystem',
     'today.lead': 'Das Energiesystem des Sisslerfelds, simuliert mit dem Wetter der letzten 365 Tage und den heutigen ' +
-      'Einstellungen. Jeden Monat kommt ein neuer Lauf dazu.',
+      'Einstellungen. Jedes Quartal kommt ein neuer Lauf dazu (bis Ende 2030).',
     'today.assume.h': 'Was «heute» hier bedeutet',
     'today.a1': '<strong>Eine Simulation, keine Messung und keine Prognose.</strong> Die Zahlen stammen aus dem ' +
       'Energy-Hub-Modell ehubX. Sie zeigen, wie ein kostenoptimales Energiesystem für das Gebiet die Nachfrage unter ' +
@@ -194,8 +194,8 @@
     'today.a6': '<strong>Modellaufbau.</strong> Das ganze Gebiet wird als ein Energy Hub abgebildet, jede Stunde des ' +
       'Jahres wird simuliert (keine Typtage), und das Modell minimiert die jährlichen Gesamtkosten in Kenntnis des ' +
       'ganzen Jahres.',
-    'today.a7': '<strong>Monatliche Aktualisierung.</strong> Am ersten Tag jedes Monats kommt ein neuer Lauf mit dem ' +
-      'Wetter bis zum Ende des Vormonats dazu; frühere «Heute»-Läufe (Namen mit R und dem Laufdatum) bleiben unter ' +
+    'today.a7': '<strong>Vierteljährliche Aktualisierung.</strong> Am 1. Januar, 1. April, 1. Juli und 1. Oktober ' +
+      'kommt ein neuer Lauf mit dem Wetter bis zum Ende des Vormonats dazu, letztmals am 1. Oktober 2030; frühere «Heute»-Läufe (Namen mit R und dem Laufdatum) bleiben unter ' +
       '<a href="runs.html">Alle Läufe</a>.',
     'sandbox.h2': '3 · Energiesystem-Sandkasten',
     'sandbox.lead': 'Ändern Sie die wichtigsten Annahmen und sehen Sie das simulierte System. Jede Kombination ist ein ' +
